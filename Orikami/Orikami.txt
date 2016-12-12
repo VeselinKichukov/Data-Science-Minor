@@ -1,0 +1,47 @@
+import pymongo
+import numpy as np
+import pandas as pd
+import sklearn as sk
+import matplotlib
+import matplotlib.pyplot as plt
+import datetime
+
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+
+client = MongoClient()
+client = MongoClient('mongodb://teamfontys:teamfontys@akira-0.orikami.0434.mongodbdns.com:27017,akira-1.orikami.0434.mongodbdns.com:27017/mozart?replicaSet=akira')
+db = client.mozart
+
+collection_songs_daily = db['npTimeseriesDaily']
+
+def print_version_info():
+    print('Version info for imports')
+    print('numpy version:', np.__version__)
+    print('pandas version:', pd.__version__)
+    print('scikit-learn version:', sk.__version__)
+    print('matplotlib version:', matplotlib.__version__)
+    print('pymongo version:', pymongo.version)
+    print('\r\n')
+
+def print_mongodb_collections():
+    collection_list = db.collection_names()
+    for entries in collection_list:
+        print(entries)     
+    
+df_songs = pd.DataFrame(columns=['_id', 'artist', 'title', 'mbid'])
+df_songs_daily = pd.DataFrame(columns=['day', 'mentions']) 
+#MAKE SURE PATH IS GOOD!
+df_songs = pd.read_csv("C:/ADS/songs_mbid_records.csv", sep=',',engine='python')
+
+def get_data_mbid(id):
+    mention = collection_songs_daily.find_one( { 
+                '_id.mbId': { '$eq': id }
+            })
+    print(mention)
+#     df_row = [first_mention['_id'], first_mention['song']['artists'],first_mention['song']['title'],first_mention['song']['mb_id']]
+#     df_songs.loc[len(df_songs)] = df_row
+
+try_out = '3cd89446-1133-44ca-a012-226fd562e105'
+
+get_data_mbid(try_out)
